@@ -13,6 +13,24 @@
 {{if .Faction.Description}}<p>{{.Faction.Description}}</p>{{end}}
 {{if .Faction.Notes}}<blockquote>{{.Faction.Notes}}</blockquote>{{end}}
 
+{{if loggedIn}}
+<details>
+  <summary role="button" class="outline">Edit Faction</summary>
+  <form method="POST" action="/campaigns/{{.Faction.CampaignID}}/factions/{{.Faction.ID}}/edit" style="margin-top:1rem">
+    <div class="grid">
+      <label>Name <input type="text" name="name" value="{{.Faction.Name}}" required></label>
+      <label>Alignment <input type="text" name="alignment" value="{{if .Faction.Alignment}}{{.Faction.Alignment}}{{end}}"></label>
+    </div>
+    <label>Description <input type="text" name="description" value="{{if .Faction.Description}}{{.Faction.Description}}{{end}}"></label>
+    <label>Notes <textarea name="notes">{{if .Faction.Notes}}{{.Faction.Notes}}{{end}}</textarea></label>
+    <button type="submit">Save</button>
+  </form>
+</details>
+<form method="POST" action="/campaigns/{{.Faction.CampaignID}}/factions/{{.Faction.ID}}/delete" style="margin-bottom:2rem" onsubmit="return confirm('Delete this faction?')">
+  <button type="submit" class="outline contrast">Delete Faction</button>
+</form>
+{{end}}
+
 {{/* Members */}}
 <h2 class="section-header">Members</h2>
 {{if .NPCs}}
@@ -21,10 +39,31 @@
   <li>
     <a href="/campaigns/{{$.Faction.CampaignID}}/npcs/{{.NPCID}}">{{.Name}}</a>
     {{if .Role}}<span class="muted">— {{.Role}}</span>{{end}}
+    {{if loggedIn}}
+    <form method="POST" action="/campaigns/{{$.Faction.CampaignID}}/factions/{{$.Faction.ID}}/npcs/{{.NPCID}}/unlink" style="display:inline;margin:0">
+      <button type="submit" class="outline contrast" style="padding:.1rem .4rem;font-size:.75rem">remove</button>
+    </form>
+    {{end}}
   </li>
   {{end}}
 </ul>
 {{else}}<p class="muted">No members linked.</p>{{end}}
+{{if loggedIn}}
+<details>
+  <summary role="button" class="outline secondary" style="margin-top:.5rem">Add Member</summary>
+  <form method="POST" action="/campaigns/{{.Faction.CampaignID}}/factions/{{.Faction.ID}}/link-npc" style="margin-top:1rem">
+    <div class="grid">
+      <label>NPC
+        <select name="npc_id">
+          {{range .AllNPCs}}<option value="{{.ID}}">{{.Name}}</option>{{end}}
+        </select>
+      </label>
+      <label>Role <input type="text" name="role" placeholder="Optional"></label>
+    </div>
+    <button type="submit">Add</button>
+  </form>
+</details>
+{{end}}
 
 {{/* Locations */}}
 <h2 class="section-header">Locations</h2>
@@ -34,8 +73,29 @@
   <li>
     <a href="/campaigns/{{$.Faction.CampaignID}}/locations/{{.LocationID}}">{{.Name}}</a>
     {{if .Relationship}}<span class="muted">— {{.Relationship}}</span>{{end}}
+    {{if loggedIn}}
+    <form method="POST" action="/campaigns/{{$.Faction.CampaignID}}/factions/{{$.Faction.ID}}/locations/{{.LocationID}}/unlink" style="display:inline;margin:0">
+      <button type="submit" class="outline contrast" style="padding:.1rem .4rem;font-size:.75rem">remove</button>
+    </form>
+    {{end}}
   </li>
   {{end}}
 </ul>
 {{else}}<p class="muted">No locations linked.</p>{{end}}
+{{if loggedIn}}
+<details>
+  <summary role="button" class="outline secondary" style="margin-top:.5rem">Add Location</summary>
+  <form method="POST" action="/campaigns/{{.Faction.CampaignID}}/factions/{{.Faction.ID}}/link-location" style="margin-top:1rem">
+    <div class="grid">
+      <label>Location
+        <select name="location_id">
+          {{range .AllLocations}}<option value="{{.ID}}">{{.Name}}</option>{{end}}
+        </select>
+      </label>
+      <label>Relationship <input type="text" name="relationship" placeholder="Optional"></label>
+    </div>
+    <button type="submit">Add</button>
+  </form>
+</details>
+{{end}}
 {{end}}

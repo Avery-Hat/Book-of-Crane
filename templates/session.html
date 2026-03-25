@@ -15,6 +15,21 @@
 
 {{if .Session.Summary}}<p>{{.Session.Summary}}</p>{{end}}
 
+{{if loggedIn}}
+<details>
+  <summary role="button" class="outline">Edit Session</summary>
+  <form method="POST" action="/campaigns/{{.Session.CampaignID}}/sessions/{{.Session.ID}}/edit" style="margin-top:1rem">
+    <label>Title <input type="text" name="title" value="{{if .Session.Title}}{{.Session.Title}}{{end}}"></label>
+    <label>Played on <input type="date" name="played_on" value="{{if .Session.PlayedOn}}{{.Session.PlayedOn.Format "2006-01-02"}}{{end}}"></label>
+    <label>Summary <textarea name="summary">{{if .Session.Summary}}{{.Session.Summary}}{{end}}</textarea></label>
+    <button type="submit">Save</button>
+  </form>
+</details>
+<form method="POST" action="/campaigns/{{.Session.CampaignID}}/sessions/{{.Session.ID}}/delete" style="margin-bottom:2rem" onsubmit="return confirm('Delete this session?')">
+  <button type="submit" class="outline contrast">Delete Session</button>
+</form>
+{{end}}
+
 {{/* NPCs */}}
 <h2 class="section-header">NPCs</h2>
 {{if .NPCs}}
@@ -24,20 +39,63 @@
     <a href="/campaigns/{{$.Session.CampaignID}}/npcs/{{.NPCID}}">{{.Name}}</a>
     {{if .Race}}<span class="muted">({{.Race}})</span>{{end}}
     {{if .Introduced}}<span class="tag">first appearance</span>{{end}}
+    {{if loggedIn}}
+    <form method="POST" action="/campaigns/{{$.Session.CampaignID}}/sessions/{{$.Session.ID}}/npcs/{{.NPCID}}/unlink" style="display:inline;margin:0">
+      <button type="submit" class="outline contrast" style="padding:.1rem .4rem;font-size:.75rem">remove</button>
+    </form>
+    {{end}}
   </li>
   {{end}}
 </ul>
 {{else}}<p class="muted">No NPCs linked.</p>{{end}}
+{{if loggedIn}}
+<details>
+  <summary role="button" class="outline secondary" style="margin-top:.5rem">Add NPC</summary>
+  <form method="POST" action="/campaigns/{{.Session.CampaignID}}/sessions/{{.Session.ID}}/link-npc" style="margin-top:1rem">
+    <div class="grid">
+      <label>NPC
+        <select name="npc_id">
+          {{range .AllNPCs}}<option value="{{.ID}}">{{.Name}}</option>{{end}}
+        </select>
+      </label>
+      <label style="display:flex;align-items:center;gap:.5rem;margin-top:1.5rem">
+        <input type="checkbox" name="introduced" style="width:auto"> First appearance
+      </label>
+    </div>
+    <button type="submit">Add</button>
+  </form>
+</details>
+{{end}}
 
 {{/* Locations */}}
 <h2 class="section-header">Locations</h2>
 {{if .Locations}}
 <ul>
   {{range .Locations}}
-  <li><a href="/campaigns/{{$.Session.CampaignID}}/locations/{{.LocationID}}">{{.Name}}</a></li>
+  <li>
+    <a href="/campaigns/{{$.Session.CampaignID}}/locations/{{.LocationID}}">{{.Name}}</a>
+    {{if loggedIn}}
+    <form method="POST" action="/campaigns/{{$.Session.CampaignID}}/sessions/{{$.Session.ID}}/locations/{{.LocationID}}/unlink" style="display:inline;margin:0">
+      <button type="submit" class="outline contrast" style="padding:.1rem .4rem;font-size:.75rem">remove</button>
+    </form>
+    {{end}}
+  </li>
   {{end}}
 </ul>
 {{else}}<p class="muted">No locations linked.</p>{{end}}
+{{if loggedIn}}
+<details>
+  <summary role="button" class="outline secondary" style="margin-top:.5rem">Add Location</summary>
+  <form method="POST" action="/campaigns/{{.Session.CampaignID}}/sessions/{{.Session.ID}}/link-location" style="margin-top:1rem">
+    <label>Location
+      <select name="location_id">
+        {{range .AllLocations}}<option value="{{.ID}}">{{.Name}}</option>{{end}}
+      </select>
+    </label>
+    <button type="submit">Add</button>
+  </form>
+</details>
+{{end}}
 
 {{/* Items */}}
 <h2 class="section-header">Items</h2>
@@ -47,8 +105,26 @@
   <li>
     {{.Name}}
     {{if .Rarity}}<span class="tag">{{.Rarity}}</span>{{end}}
+    {{if loggedIn}}
+    <form method="POST" action="/campaigns/{{$.Session.CampaignID}}/sessions/{{$.Session.ID}}/items/{{.ItemID}}/unlink" style="display:inline;margin:0">
+      <button type="submit" class="outline contrast" style="padding:.1rem .4rem;font-size:.75rem">remove</button>
+    </form>
+    {{end}}
   </li>
   {{end}}
 </ul>
 {{else}}<p class="muted">No items linked.</p>{{end}}
+{{if loggedIn}}
+<details>
+  <summary role="button" class="outline secondary" style="margin-top:.5rem">Add Item</summary>
+  <form method="POST" action="/campaigns/{{.Session.CampaignID}}/sessions/{{.Session.ID}}/link-item" style="margin-top:1rem">
+    <label>Item
+      <select name="item_id">
+        {{range .AllItems}}<option value="{{.ID}}">{{.Name}}</option>{{end}}
+      </select>
+    </label>
+    <button type="submit">Add</button>
+  </form>
+</details>
+{{end}}
 {{end}}

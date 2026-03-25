@@ -1,0 +1,18 @@
+{{define "title"}}Register{{end}}
+{{define "content"}}
+<article style="max-width:400px;margin:4rem auto;">
+  <h2>Register</h2>
+  {{if .Error}}<p style="color:var(--pico-del-color);">{{.Error}}</p>{{end}}
+  <form method="POST" action="/register">
+    <label>Username
+      <input type="text" name="username" required autofocus>
+    </label>
+    <label>Password
+      <input type="password" name="password" required minlength="8">
+      <small>Minimum 8 characters</small>
+    </label>
+    <button type="submit">Create Account</button>
+  </form>
+  <p class="muted">Already have an account? <a href="/login">Login</a></p>
+</article>
+{{end}}

@@ -1,0 +1,17 @@
+{{define "title"}}Login{{end}}
+{{define "content"}}
+<article style="max-width:400px;margin:4rem auto;">
+  <h2>Login</h2>
+  {{if .Error}}<p style="color:var(--pico-del-color);">{{.Error}}</p>{{end}}
+  <form method="POST" action="/login">
+    <label>Username
+      <input type="text" name="username" required autofocus>
+    </label>
+    <label>Password
+      <input type="password" name="password" required>
+    </label>
+    <button type="submit">Login</button>
+  </form>
+  <p class="muted">No account? <a href="/register">Register</a></p>
+</article>
+{{end}}

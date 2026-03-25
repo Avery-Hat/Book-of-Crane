@@ -23,6 +23,12 @@
       </ul>
       <ul>
         <li>{{template "nav-extra" .}}</li>
+        {{if loggedIn}}
+        <li class="muted">{{currentUser}}</li>
+        <li><form method="POST" action="/logout" style="margin:0"><button class="outline" style="padding:.25rem .75rem;font-size:.9rem">Logout</button></form></li>
+        {{else}}
+        <li><a href="/login">Login</a></li>
+        {{end}}
       </ul>
     </nav>
     {{template "content" .}}

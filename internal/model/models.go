@@ -291,6 +291,22 @@ type LinkSessionItemRequest struct {
 	ItemID int `json:"item_id"`
 }
 
+// --- Auth ---
+
+type RegisterRequest struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
+type LoginRequest struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
+type LoginResponse struct {
+	Token string `json:"token"`
+}
+
 // --- Relationship request types ---
 
 type LinkNPCFactionRequest struct {

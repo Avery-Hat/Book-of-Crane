@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/Avery-Hat/Book-of-Crane/internal/model"
 	"github.com/Avery-Hat/Book-of-Crane/internal/store"
@@ -153,7 +154,11 @@ func (h *NPCHandler) Delete(w http.ResponseWriter, r *http.Request) {
 }
 
 func validNPCStatus(s string) bool {
-	return s == "alive" || s == "dead" || s == "unknown"
+	switch strings.ToLower(s) {
+	case "alive", "dead", "unknown":
+		return true
+	}
+	return false
 }
 
 func (h *NPCHandler) Detail(w http.ResponseWriter, r *http.Request) {

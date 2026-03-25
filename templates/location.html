@@ -13,6 +13,24 @@
 {{if .Location.Description}}<p>{{.Location.Description}}</p>{{end}}
 {{if .Location.Notes}}<blockquote>{{.Location.Notes}}</blockquote>{{end}}
 
+{{if loggedIn}}
+<details>
+  <summary role="button" class="outline">Edit Location</summary>
+  <form method="POST" action="/campaigns/{{.Location.CampaignID}}/locations/{{.Location.ID}}/edit" style="margin-top:1rem">
+    <div class="grid">
+      <label>Name <input type="text" name="name" value="{{.Location.Name}}" required></label>
+      <label>Type <input type="text" name="type" value="{{if .Location.Type}}{{.Location.Type}}{{end}}"></label>
+    </div>
+    <label>Description <input type="text" name="description" value="{{if .Location.Description}}{{.Location.Description}}{{end}}"></label>
+    <label>Notes <textarea name="notes">{{if .Location.Notes}}{{.Location.Notes}}{{end}}</textarea></label>
+    <button type="submit">Save</button>
+  </form>
+</details>
+<form method="POST" action="/campaigns/{{.Location.CampaignID}}/locations/{{.Location.ID}}/delete" style="margin-bottom:2rem" onsubmit="return confirm('Delete this location?')">
+  <button type="submit" class="outline contrast">Delete Location</button>
+</form>
+{{end}}
+
 {{/* NPCs */}}
 <h2 class="section-header">NPCs Here</h2>
 {{if .NPCs}}
@@ -21,8 +39,29 @@
   <li>
     <a href="/campaigns/{{$.Location.CampaignID}}/npcs/{{.NPCID}}">{{.Name}}</a>
     {{if .Context}}<span class="muted">— {{.Context}}</span>{{end}}
+    {{if loggedIn}}
+    <form method="POST" action="/campaigns/{{$.Location.CampaignID}}/locations/{{$.Location.ID}}/npcs/{{.NPCID}}/unlink" style="display:inline;margin:0">
+      <button type="submit" class="outline contrast" style="padding:.1rem .4rem;font-size:.75rem">remove</button>
+    </form>
+    {{end}}
   </li>
   {{end}}
 </ul>
 {{else}}<p class="muted">No NPCs linked to this location.</p>{{end}}
+{{if loggedIn}}
+<details>
+  <summary role="button" class="outline secondary" style="margin-top:.5rem">Add NPC</summary>
+  <form method="POST" action="/campaigns/{{.Location.CampaignID}}/locations/{{.Location.ID}}/link-npc" style="margin-top:1rem">
+    <div class="grid">
+      <label>NPC
+        <select name="npc_id">
+          {{range .AllNPCs}}<option value="{{.ID}}">{{.Name}}</option>{{end}}
+        </select>
+      </label>
+      <label>Context <input type="text" name="context" placeholder="Optional"></label>
+    </div>
+    <button type="submit">Add</button>
+  </form>
+</details>
+{{end}}
 {{end}}

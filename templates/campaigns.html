@@ -17,6 +17,17 @@
   {{end}}
 </div>
 {{else}}
-<p>No campaigns yet. Create one via the API to get started.</p>
+<p>No campaigns yet.{{if not loggedIn}} <a href="/login">Login</a> to create one.{{end}}</p>
+{{end}}
+
+{{if loggedIn}}
+<h2 class="section-header">New Campaign</h2>
+<form method="POST" action="/campaigns">
+  <div class="grid">
+    <input type="text" name="name" placeholder="Campaign name" required>
+    <input type="text" name="description" placeholder="Description (optional)">
+  </div>
+  <button type="submit">Create Campaign</button>
+</form>
 {{end}}
 {{end}}

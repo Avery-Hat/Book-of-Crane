@@ -30,6 +30,11 @@ func main() {
 		port = "8080"
 	}
 
+	jwtSecret := os.Getenv("JWT_SECRET")
+	if jwtSecret == "" {
+		jwtSecret = "dev-secret-change-in-production"
+	}
+
 	// Run migrations
 	if err := runMigrations(dbURL); err != nil {
 		log.Fatalf("Failed to run migrations: %v", err)
@@ -73,9 +78,12 @@ func main() {
 	relStore := store.NewRelationshipStore(pool)
 	relHandler := handler.NewRelationshipHandler(relStore)
 
+	authStore := store.NewAuthStore(pool)
+	authHandler := handler.NewAuthHandler(authStore, jwtSecret)
+
 	webHandler := web.NewHandler(
-		campaignStore, npcStore, locationStore, factionStore,
-		sessionStore, searchStore, relStore, "templates",
+		campaignStore, npcStore, locationStore, factionStore, itemStore,
+		sessionStore, searchStore, relStore, authStore, jwtSecret, "templates",
 	)
 
 	// Router
@@ -83,20 +91,70 @@ func main() {
 	r.Use(middleware.Recover)
 	r.Use(middleware.Logger)
 
-	// API routes
-	r.Mount("/api/campaigns", campaignHandler.Routes())
-	r.Mount("/api/campaigns/{campaignID}/npcs", npcHandler.Routes())
-	r.Mount("/api/campaigns/{campaignID}/locations", locationHandler.Routes())
-	r.Mount("/api/campaigns/{campaignID}/factions", factionHandler.Routes())
-	r.Mount("/api/campaigns/{campaignID}/items", itemHandler.Routes())
-	r.Mount("/api/campaigns/{campaignID}/sessions", sessionHandler.Routes())
-	r.Mount("/api/campaigns/{campaignID}/search", searchHandler.Routes())
+	// Auth routes (public)
+	r.Mount("/auth", authHandler.Routes())
 
-	// Relationship routes
-	r.Mount("/api/campaigns/{campaignID}/npcs/{npcID}/factions", relHandler.NPCFactionRoutes())
-	r.Mount("/api/campaigns/{campaignID}/npcs/{npcID}/locations", relHandler.NPCLocationRoutes())
-	r.Mount("/api/campaigns/{campaignID}/npcs/{npcID}/relationships", relHandler.NPCRelationshipRoutes())
-	r.Mount("/api/campaigns/{campaignID}/factions/{factionID}/locations", relHandler.FactionLocationRoutes())
+	// API routes
+	requireAuth := middleware.RequireAuth(jwtSecret)
+	r.Route("/api", func(api chi.Router) {
+		// GET routes — public
+		api.Get("/campaigns", campaignHandler.List)
+		api.Get("/campaigns/{id}", campaignHandler.Get)
+		api.Get("/campaigns/{campaignID}/npcs", npcHandler.List)
+		api.Get("/campaigns/{campaignID}/npcs/{npcID}", npcHandler.Get)
+		api.Get("/campaigns/{campaignID}/npcs/{npcID}/detail", npcHandler.Detail)
+		api.Get("/campaigns/{campaignID}/locations", locationHandler.List)
+		api.Get("/campaigns/{campaignID}/locations/{locationID}", locationHandler.Get)
+		api.Get("/campaigns/{campaignID}/factions", factionHandler.List)
+		api.Get("/campaigns/{campaignID}/factions/{factionID}", factionHandler.Get)
+		api.Get("/campaigns/{campaignID}/items", itemHandler.List)
+		api.Get("/campaigns/{campaignID}/items/{itemID}", itemHandler.Get)
+		api.Get("/campaigns/{campaignID}/sessions", sessionHandler.List)
+		api.Get("/campaigns/{campaignID}/sessions/{sessionID}", sessionHandler.Get)
+		api.Get("/campaigns/{campaignID}/sessions/{sessionID}/recap", sessionHandler.Recap)
+		api.Get("/campaigns/{campaignID}/sessions/{sessionID}/npcs", sessionHandler.ListNPCs)
+		api.Get("/campaigns/{campaignID}/sessions/{sessionID}/locations", sessionHandler.ListLocations)
+		api.Get("/campaigns/{campaignID}/sessions/{sessionID}/items", sessionHandler.ListItems)
+		api.Get("/campaigns/{campaignID}/search", searchHandler.Search)
+		api.Get("/campaigns/{campaignID}/npcs/{npcID}/factions", relHandler.ListNPCFactions)
+		api.Get("/campaigns/{campaignID}/npcs/{npcID}/locations", relHandler.ListNPCLocations)
+		api.Get("/campaigns/{campaignID}/npcs/{npcID}/relationships", relHandler.ListNPCRelationships)
+		api.Get("/campaigns/{campaignID}/factions/{factionID}/locations", relHandler.ListFactionLocations)
+
+		// Write routes — require auth
+		api.With(requireAuth).Post("/campaigns", campaignHandler.Create)
+		api.With(requireAuth).Put("/campaigns/{id}", campaignHandler.Update)
+		api.With(requireAuth).Delete("/campaigns/{id}", campaignHandler.Delete)
+		api.With(requireAuth).Post("/campaigns/{campaignID}/npcs", npcHandler.Create)
+		api.With(requireAuth).Put("/campaigns/{campaignID}/npcs/{npcID}", npcHandler.Update)
+		api.With(requireAuth).Delete("/campaigns/{campaignID}/npcs/{npcID}", npcHandler.Delete)
+		api.With(requireAuth).Post("/campaigns/{campaignID}/locations", locationHandler.Create)
+		api.With(requireAuth).Put("/campaigns/{campaignID}/locations/{locationID}", locationHandler.Update)
+		api.With(requireAuth).Delete("/campaigns/{campaignID}/locations/{locationID}", locationHandler.Delete)
+		api.With(requireAuth).Post("/campaigns/{campaignID}/factions", factionHandler.Create)
+		api.With(requireAuth).Put("/campaigns/{campaignID}/factions/{factionID}", factionHandler.Update)
+		api.With(requireAuth).Delete("/campaigns/{campaignID}/factions/{factionID}", factionHandler.Delete)
+		api.With(requireAuth).Post("/campaigns/{campaignID}/items", itemHandler.Create)
+		api.With(requireAuth).Put("/campaigns/{campaignID}/items/{itemID}", itemHandler.Update)
+		api.With(requireAuth).Delete("/campaigns/{campaignID}/items/{itemID}", itemHandler.Delete)
+		api.With(requireAuth).Post("/campaigns/{campaignID}/sessions", sessionHandler.Create)
+		api.With(requireAuth).Put("/campaigns/{campaignID}/sessions/{sessionID}", sessionHandler.Update)
+		api.With(requireAuth).Delete("/campaigns/{campaignID}/sessions/{sessionID}", sessionHandler.Delete)
+		api.With(requireAuth).Post("/campaigns/{campaignID}/sessions/{sessionID}/npcs", sessionHandler.LinkNPC)
+		api.With(requireAuth).Delete("/campaigns/{campaignID}/sessions/{sessionID}/npcs/{npcID}", sessionHandler.UnlinkNPC)
+		api.With(requireAuth).Post("/campaigns/{campaignID}/sessions/{sessionID}/locations", sessionHandler.LinkLocation)
+		api.With(requireAuth).Delete("/campaigns/{campaignID}/sessions/{sessionID}/locations/{locationID}", sessionHandler.UnlinkLocation)
+		api.With(requireAuth).Post("/campaigns/{campaignID}/sessions/{sessionID}/items", sessionHandler.LinkItem)
+		api.With(requireAuth).Delete("/campaigns/{campaignID}/sessions/{sessionID}/items/{itemID}", sessionHandler.UnlinkItem)
+		api.With(requireAuth).Post("/campaigns/{campaignID}/npcs/{npcID}/factions", relHandler.LinkNPCFaction)
+		api.With(requireAuth).Delete("/campaigns/{campaignID}/npcs/{npcID}/factions/{factionID}", relHandler.UnlinkNPCFaction)
+		api.With(requireAuth).Post("/campaigns/{campaignID}/npcs/{npcID}/locations", relHandler.LinkNPCLocation)
+		api.With(requireAuth).Delete("/campaigns/{campaignID}/npcs/{npcID}/locations/{locationID}", relHandler.UnlinkNPCLocation)
+		api.With(requireAuth).Post("/campaigns/{campaignID}/npcs/{npcID}/relationships", relHandler.CreateNPCRelationship)
+		api.With(requireAuth).Delete("/campaigns/{campaignID}/npcs/{npcID}/relationships/{otherNPCID}", relHandler.DeleteNPCRelationship)
+		api.With(requireAuth).Post("/campaigns/{campaignID}/factions/{factionID}/locations", relHandler.LinkFactionLocation)
+		api.With(requireAuth).Delete("/campaigns/{campaignID}/factions/{factionID}/locations/{locationID}", relHandler.UnlinkFactionLocation)
+	})
 
 	// Web UI
 	r.Mount("/", webHandler.Routes())

@@ -10,6 +10,20 @@
   {{if .Campaign.Description}}<p>{{.Campaign.Description}}</p>{{end}}
 </hgroup>
 
+{{if loggedIn}}
+<details>
+  <summary role="button" class="outline">Edit Campaign</summary>
+  <form method="POST" action="/campaigns/{{.Campaign.ID}}/edit" style="margin-top:1rem">
+    <label>Name <input type="text" name="name" value="{{.Campaign.Name}}" required></label>
+    <label>Description <input type="text" name="description" value="{{if .Campaign.Description}}{{.Campaign.Description}}{{end}}"></label>
+    <button type="submit">Save</button>
+  </form>
+</details>
+<form method="POST" action="/campaigns/{{.Campaign.ID}}/delete" style="margin-bottom:2rem" onsubmit="return confirm('Delete this campaign? This cannot be undone.')">
+  <button type="submit" class="outline contrast">Delete Campaign</button>
+</form>
+{{end}}
+
 {{/* NPCs */}}
 <h2 class="section-header">NPCs</h2>
 {{if .NPCs}}
@@ -28,6 +42,28 @@
 </div>
 {{else}}<p class="muted">No NPCs yet.</p>{{end}}
 
+{{if loggedIn}}
+<details>
+  <summary role="button" class="outline secondary">Add NPC</summary>
+  <form method="POST" action="/campaigns/{{.Campaign.ID}}/npcs" style="margin-top:1rem">
+    <div class="grid">
+      <input type="text" name="name" placeholder="Name" required>
+      <input type="text" name="race" placeholder="Race (optional)">
+    </div>
+    <div class="grid">
+      <input type="text" name="role" placeholder="Role (optional)">
+      <select name="status">
+        <option value="alive">Alive</option>
+        <option value="dead">Dead</option>
+        <option value="unknown">Unknown</option>
+      </select>
+    </div>
+    <input type="text" name="description" placeholder="Description (optional)">
+    <button type="submit">Add NPC</button>
+  </form>
+</details>
+{{end}}
+
 {{/* Locations */}}
 <h2 class="section-header">Locations</h2>
 {{if .Locations}}
@@ -42,6 +78,20 @@
 </div>
 {{else}}<p class="muted">No locations yet.</p>{{end}}
 
+{{if loggedIn}}
+<details>
+  <summary role="button" class="outline secondary">Add Location</summary>
+  <form method="POST" action="/campaigns/{{.Campaign.ID}}/locations" style="margin-top:1rem">
+    <div class="grid">
+      <input type="text" name="name" placeholder="Name" required>
+      <input type="text" name="type" placeholder="Type (e.g. City, Dungeon)">
+    </div>
+    <input type="text" name="description" placeholder="Description (optional)">
+    <button type="submit">Add Location</button>
+  </form>
+</details>
+{{end}}
+
 {{/* Factions */}}
 <h2 class="section-header">Factions</h2>
 {{if .Factions}}
@@ -55,6 +105,20 @@
   {{end}}
 </div>
 {{else}}<p class="muted">No factions yet.</p>{{end}}
+
+{{if loggedIn}}
+<details>
+  <summary role="button" class="outline secondary">Add Faction</summary>
+  <form method="POST" action="/campaigns/{{.Campaign.ID}}/factions" style="margin-top:1rem">
+    <div class="grid">
+      <input type="text" name="name" placeholder="Name" required>
+      <input type="text" name="alignment" placeholder="Alignment (optional)">
+    </div>
+    <input type="text" name="description" placeholder="Description (optional)">
+    <button type="submit">Add Faction</button>
+  </form>
+</details>
+{{end}}
 
 {{/* Sessions */}}
 <h2 class="section-header">Sessions</h2>
@@ -74,4 +138,20 @@
   </tbody>
 </table>
 {{else}}<p class="muted">No sessions yet.</p>{{end}}
+
+{{if loggedIn}}
+<details>
+  <summary role="button" class="outline secondary">Add Session</summary>
+  <form method="POST" action="/campaigns/{{.Campaign.ID}}/sessions" style="margin-top:1rem">
+    <div class="grid">
+      <label>Session # <input type="number" name="session_number" min="1" required></label>
+      <label>Title <input type="text" name="title" placeholder="Optional"></label>
+    </div>
+    <label>Played on <input type="date" name="played_on"></label>
+    <label>Summary <textarea name="summary" placeholder="Optional"></textarea></label>
+    <button type="submit">Add Session</button>
+  </form>
+</details>
+{{end}}
+
 {{end}}
