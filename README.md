@@ -66,7 +66,7 @@ curl -X DELETE http://localhost:8080/api/campaigns/1
 ```bash
 curl -X POST http://localhost:8080/api/campaigns/1/npcs \
   -H "Content-Type: application/json" \
-  -d '{"name": "Reya Mantlemorn", "race": "human", "role": "Soldier", "status": "alive"}'
+  -d '{"name": "Reya Mantlemorn", "race": "Human", "role": "Soldier", "status": "Alive"}'
 
 curl http://localhost:8080/api/campaigns/1/npcs
 curl http://localhost:8080/api/campaigns/1/npcs/1
@@ -78,7 +78,7 @@ curl http://localhost:8080/api/campaigns/1/npcs/1/detail   # full detail with al
 ```bash
 curl -X POST http://localhost:8080/api/campaigns/1/locations \
   -H "Content-Type: application/json" \
-  -d '{"name": "Elturel", "type": "city"}'
+  -d '{"name": "Elturel", "type": "City"}'
 
 curl http://localhost:8080/api/campaigns/1/locations
 ```
