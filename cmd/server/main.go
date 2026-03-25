@@ -80,6 +80,7 @@ func main() {
 
 	// Router
 	r := chi.NewRouter()
+	r.Use(middleware.Recover)
 	r.Use(middleware.Logger)
 
 	// API routes

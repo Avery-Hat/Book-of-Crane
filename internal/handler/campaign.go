@@ -90,6 +90,10 @@ func (h *CampaignHandler) Update(w http.ResponseWriter, r *http.Request) {
 		writeError(w, http.StatusBadRequest, "invalid request body")
 		return
 	}
+	if req.Name != nil && *req.Name == "" {
+		writeError(w, http.StatusBadRequest, "name cannot be empty")
+		return
+	}
 
 	campaign, err := h.store.Update(r.Context(), id, req)
 	if err != nil {

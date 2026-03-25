@@ -107,6 +107,10 @@ func (h *LocationHandler) Update(w http.ResponseWriter, r *http.Request) {
 		writeError(w, http.StatusBadRequest, "invalid request body")
 		return
 	}
+	if req.Name != nil && *req.Name == "" {
+		writeError(w, http.StatusBadRequest, "name cannot be empty")
+		return
+	}
 	location, err := h.store.Update(r.Context(), cid, lid, req)
 	if err != nil {
 		log.Printf("ERROR updating location %d: %v", lid, err)

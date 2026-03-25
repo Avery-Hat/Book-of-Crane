@@ -107,6 +107,10 @@ func (h *ItemHandler) Update(w http.ResponseWriter, r *http.Request) {
 		writeError(w, http.StatusBadRequest, "invalid request body")
 		return
 	}
+	if req.Name != nil && *req.Name == "" {
+		writeError(w, http.StatusBadRequest, "name cannot be empty")
+		return
+	}
 	item, err := h.store.Update(r.Context(), cid, iid, req)
 	if err != nil {
 		log.Printf("ERROR updating item %d: %v", iid, err)

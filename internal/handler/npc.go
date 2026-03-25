@@ -87,6 +87,10 @@ func (h *NPCHandler) Create(w http.ResponseWriter, r *http.Request) {
 		writeError(w, http.StatusBadRequest, "name is required")
 		return
 	}
+	if req.Status != "" && !validNPCStatus(req.Status) {
+		writeError(w, http.StatusBadRequest, "status must be 'alive', 'dead', or 'unknown'")
+		return
+	}
 	npc, err := h.store.Create(r.Context(), cid, req)
 	if err != nil {
 		log.Printf("ERROR creating npc: %v", err)
@@ -110,6 +114,14 @@ func (h *NPCHandler) Update(w http.ResponseWriter, r *http.Request) {
 	var req model.UpdateNPCRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		writeError(w, http.StatusBadRequest, "invalid request body")
+		return
+	}
+	if req.Name != nil && *req.Name == "" {
+		writeError(w, http.StatusBadRequest, "name cannot be empty")
+		return
+	}
+	if req.Status != nil && !validNPCStatus(*req.Status) {
+		writeError(w, http.StatusBadRequest, "status must be 'alive', 'dead', or 'unknown'")
 		return
 	}
 	npc, err := h.store.Update(r.Context(), cid, nid, req)
@@ -138,6 +150,10 @@ func (h *NPCHandler) Delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.WriteHeader(http.StatusNoContent)
+}
+
+func validNPCStatus(s string) bool {
+	return s == "alive" || s == "dead" || s == "unknown"
 }
 
 func (h *NPCHandler) Detail(w http.ResponseWriter, r *http.Request) {

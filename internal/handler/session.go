@@ -100,8 +100,8 @@ func (h *SessionHandler) Create(w http.ResponseWriter, r *http.Request) {
 		writeError(w, http.StatusBadRequest, "invalid request body")
 		return
 	}
-	if req.SessionNumber == 0 {
-		writeError(w, http.StatusBadRequest, "session_number is required")
+	if req.SessionNumber < 1 {
+		writeError(w, http.StatusBadRequest, "session_number must be a positive integer")
 		return
 	}
 	session, err := h.store.Create(r.Context(), cid, req)

@@ -107,6 +107,10 @@ func (h *FactionHandler) Update(w http.ResponseWriter, r *http.Request) {
 		writeError(w, http.StatusBadRequest, "invalid request body")
 		return
 	}
+	if req.Name != nil && *req.Name == "" {
+		writeError(w, http.StatusBadRequest, "name cannot be empty")
+		return
+	}
 	faction, err := h.store.Update(r.Context(), cid, fid, req)
 	if err != nil {
 		log.Printf("ERROR updating faction %d: %v", fid, err)
