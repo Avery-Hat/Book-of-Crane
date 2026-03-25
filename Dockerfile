@@ -13,7 +13,7 @@ RUN apk add --no-cache ca-certificates
 WORKDIR /app
 COPY --from=builder /app/Book-of-Crane .
 COPY --from=builder /app/migrations ./migrations
-COPY --from=builder /app/web ./web
+COPY --from=builder /app/templates ./templates
 
 EXPOSE 8080
 CMD ["./Book-of-Crane"]

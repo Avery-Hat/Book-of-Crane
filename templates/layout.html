@@ -1,0 +1,35 @@
+{{define "layout"}}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{template "title" .}} — Book of Crane</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+  <style>
+    nav { margin-bottom: 2rem; }
+    .tag { display: inline-block; padding: .1rem .5rem; border-radius: 4px; font-size: .8rem; background: var(--pico-secondary-background); margin-right: .25rem; }
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1rem; }
+    article { margin-bottom: 0; }
+    .muted { color: var(--pico-muted-color); font-size: .9rem; }
+    .section-header { border-bottom: 1px solid var(--pico-muted-border-color); margin: 2rem 0 1rem; padding-bottom: .5rem; }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <nav>
+      <ul>
+        <li><strong><a href="/campaigns">Book of Crane</a></strong></li>
+      </ul>
+      <ul>
+        <li>{{template "nav-extra" .}}</li>
+      </ul>
+    </nav>
+    {{template "content" .}}
+  </main>
+</body>
+</html>
+{{end}}
+
+{{/* Default no-op nav-extra — pages can override */}}
+{{define "nav-extra"}}{{end}}

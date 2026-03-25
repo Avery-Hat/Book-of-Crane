@@ -1,0 +1,54 @@
+{{define "title"}}{{if .Session.Title}}{{.Session.Title}}{{else}}Session {{.Session.SessionNumber}}{{end}}{{end}}
+
+{{define "nav-extra"}}
+<a href="/campaigns/{{.Session.CampaignID}}">← Campaign</a>
+{{end}}
+
+{{define "content"}}
+<hgroup>
+  <h1>{{if .Session.Title}}{{.Session.Title}}{{else}}Session {{.Session.SessionNumber}}{{end}}</h1>
+  <p>
+    Session {{.Session.SessionNumber}}
+    {{if .Session.PlayedOn}}&nbsp;·&nbsp;{{.Session.PlayedOn.Format "Jan 2, 2006"}}{{end}}
+  </p>
+</hgroup>
+
+{{if .Session.Summary}}<p>{{.Session.Summary}}</p>{{end}}
+
+{{/* NPCs */}}
+<h2 class="section-header">NPCs</h2>
+{{if .NPCs}}
+<ul>
+  {{range .NPCs}}
+  <li>
+    <a href="/campaigns/{{$.Session.CampaignID}}/npcs/{{.NPCID}}">{{.Name}}</a>
+    {{if .Race}}<span class="muted">({{.Race}})</span>{{end}}
+    {{if .Introduced}}<span class="tag">first appearance</span>{{end}}
+  </li>
+  {{end}}
+</ul>
+{{else}}<p class="muted">No NPCs linked.</p>{{end}}
+
+{{/* Locations */}}
+<h2 class="section-header">Locations</h2>
+{{if .Locations}}
+<ul>
+  {{range .Locations}}
+  <li><a href="/campaigns/{{$.Session.CampaignID}}/locations/{{.LocationID}}">{{.Name}}</a></li>
+  {{end}}
+</ul>
+{{else}}<p class="muted">No locations linked.</p>{{end}}
+
+{{/* Items */}}
+<h2 class="section-header">Items</h2>
+{{if .Items}}
+<ul>
+  {{range .Items}}
+  <li>
+    {{.Name}}
+    {{if .Rarity}}<span class="tag">{{.Rarity}}</span>{{end}}
+  </li>
+  {{end}}
+</ul>
+{{else}}<p class="muted">No items linked.</p>{{end}}
+{{end}}

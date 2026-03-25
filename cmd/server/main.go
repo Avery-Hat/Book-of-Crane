@@ -10,6 +10,7 @@ import (
 	"github.com/Avery-Hat/Book-of-Crane/internal/handler"
 	"github.com/Avery-Hat/Book-of-Crane/internal/middleware"
 	"github.com/Avery-Hat/Book-of-Crane/internal/store"
+	"github.com/Avery-Hat/Book-of-Crane/internal/web"
 	"github.com/go-chi/chi/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 
@@ -21,7 +22,7 @@ import (
 func main() {
 	dbURL := os.Getenv("DATABASE_URL")
 	if dbURL == "" {
-		dbURL = "postgres://campaign:campaign@localhost:5432/campaign_notes?sslmode=disable"
+		dbURL = "postgres://campaign:campaign@localhost:5433/campaign_notes?sslmode=disable"
 	}
 
 	port := os.Getenv("PORT")
@@ -51,12 +52,53 @@ func main() {
 	campaignStore := store.NewCampaignStore(pool)
 	campaignHandler := handler.NewCampaignHandler(campaignStore)
 
+	npcStore := store.NewNPCStore(pool)
+	npcHandler := handler.NewNPCHandler(npcStore)
+
+	locationStore := store.NewLocationStore(pool)
+	locationHandler := handler.NewLocationHandler(locationStore)
+
+	factionStore := store.NewFactionStore(pool)
+	factionHandler := handler.NewFactionHandler(factionStore)
+
+	itemStore := store.NewItemStore(pool)
+	itemHandler := handler.NewItemHandler(itemStore)
+
+	sessionStore := store.NewSessionStore(pool)
+	sessionHandler := handler.NewSessionHandler(sessionStore)
+
+	searchStore := store.NewSearchStore(pool)
+	searchHandler := handler.NewSearchHandler(searchStore)
+
+	relStore := store.NewRelationshipStore(pool)
+	relHandler := handler.NewRelationshipHandler(relStore)
+
+	webHandler := web.NewHandler(
+		campaignStore, npcStore, locationStore, factionStore,
+		sessionStore, searchStore, relStore, "templates",
+	)
+
 	// Router
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 
 	// API routes
 	r.Mount("/api/campaigns", campaignHandler.Routes())
+	r.Mount("/api/campaigns/{campaignID}/npcs", npcHandler.Routes())
+	r.Mount("/api/campaigns/{campaignID}/locations", locationHandler.Routes())
+	r.Mount("/api/campaigns/{campaignID}/factions", factionHandler.Routes())
+	r.Mount("/api/campaigns/{campaignID}/items", itemHandler.Routes())
+	r.Mount("/api/campaigns/{campaignID}/sessions", sessionHandler.Routes())
+	r.Mount("/api/campaigns/{campaignID}/search", searchHandler.Routes())
+
+	// Relationship routes
+	r.Mount("/api/campaigns/{campaignID}/npcs/{npcID}/factions", relHandler.NPCFactionRoutes())
+	r.Mount("/api/campaigns/{campaignID}/npcs/{npcID}/locations", relHandler.NPCLocationRoutes())
+	r.Mount("/api/campaigns/{campaignID}/npcs/{npcID}/relationships", relHandler.NPCRelationshipRoutes())
+	r.Mount("/api/campaigns/{campaignID}/factions/{factionID}/locations", relHandler.FactionLocationRoutes())
+
+	// Web UI
+	r.Mount("/", webHandler.Routes())
 
 	// Health check
 	r.Get("/health", func(w http.ResponseWriter, r *http.Request) {

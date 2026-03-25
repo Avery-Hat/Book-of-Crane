@@ -1,0 +1,74 @@
+{{define "title"}}{{.NPC.Name}}{{end}}
+
+{{define "nav-extra"}}
+<a href="/campaigns/{{.NPC.CampaignID}}">← Campaign</a>
+{{end}}
+
+{{define "content"}}
+<hgroup>
+  <h1>{{.NPC.Name}}</h1>
+  <p>
+    {{if .NPC.Race}}<span class="tag">{{.NPC.Race}}</span>{{end}}
+    {{if .NPC.Role}}<span class="tag">{{.NPC.Role}}</span>{{end}}
+    <span class="tag">{{.NPC.Status}}</span>
+  </p>
+</hgroup>
+
+{{if .NPC.Description}}<p>{{.NPC.Description}}</p>{{end}}
+{{if .NPC.Notes}}<blockquote>{{.NPC.Notes}}</blockquote>{{end}}
+
+{{/* Factions */}}
+<h2 class="section-header">Factions</h2>
+{{if .Factions}}
+<ul>
+  {{range .Factions}}
+  <li>
+    <a href="/campaigns/{{$.NPC.CampaignID}}/factions/{{.FactionID}}">{{.Name}}</a>
+    {{if .Role}}<span class="muted">— {{.Role}}</span>{{end}}
+  </li>
+  {{end}}
+</ul>
+{{else}}<p class="muted">Not affiliated with any factions.</p>{{end}}
+
+{{/* Locations */}}
+<h2 class="section-header">Known Locations</h2>
+{{if .Locations}}
+<ul>
+  {{range .Locations}}
+  <li>
+    <a href="/campaigns/{{$.NPC.CampaignID}}/locations/{{.LocationID}}">{{.Name}}</a>
+    {{if .Context}}<span class="muted">— {{.Context}}</span>{{end}}
+  </li>
+  {{end}}
+</ul>
+{{else}}<p class="muted">No known locations.</p>{{end}}
+
+{{/* Relationships */}}
+<h2 class="section-header">Relationships</h2>
+{{if .Relationships}}
+<ul>
+  {{range .Relationships}}
+  <li>
+    <a href="/campaigns/{{$.NPC.CampaignID}}/npcs/{{.NPCID}}">{{.Name}}</a>
+    <span class="muted">— {{.Relationship}}</span>
+    {{if .Notes}}<span class="muted">({{.Notes}})</span>{{end}}
+  </li>
+  {{end}}
+</ul>
+{{else}}<p class="muted">No recorded relationships.</p>{{end}}
+
+{{/* Sessions */}}
+<h2 class="section-header">Session Appearances</h2>
+{{if .Sessions}}
+<ul>
+  {{range .Sessions}}
+  <li>
+    <a href="/campaigns/{{$.NPC.CampaignID}}/sessions/{{.SessionID}}">
+      {{if .Title}}{{.Title}}{{else}}Session {{.SessionNumber}}{{end}}
+    </a>
+    {{if .Introduced}}<span class="tag">first appearance</span>{{end}}
+  </li>
+  {{end}}
+</ul>
+{{else}}<p class="muted">Has not appeared in any sessions.</p>{{end}}
+{{end}}

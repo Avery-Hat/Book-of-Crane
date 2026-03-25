@@ -1,0 +1,28 @@
+{{define "title"}}{{.Location.Name}}{{end}}
+
+{{define "nav-extra"}}
+<a href="/campaigns/{{.Location.CampaignID}}">← Campaign</a>
+{{end}}
+
+{{define "content"}}
+<hgroup>
+  <h1>{{.Location.Name}}</h1>
+  <p>{{if .Location.Type}}<span class="tag">{{.Location.Type}}</span>{{end}}</p>
+</hgroup>
+
+{{if .Location.Description}}<p>{{.Location.Description}}</p>{{end}}
+{{if .Location.Notes}}<blockquote>{{.Location.Notes}}</blockquote>{{end}}
+
+{{/* NPCs */}}
+<h2 class="section-header">NPCs Here</h2>
+{{if .NPCs}}
+<ul>
+  {{range .NPCs}}
+  <li>
+    <a href="/campaigns/{{$.Location.CampaignID}}/npcs/{{.NPCID}}">{{.Name}}</a>
+    {{if .Context}}<span class="muted">— {{.Context}}</span>{{end}}
+  </li>
+  {{end}}
+</ul>
+{{else}}<p class="muted">No NPCs linked to this location.</p>{{end}}
+{{end}}

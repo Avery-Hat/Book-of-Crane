@@ -1,0 +1,41 @@
+{{define "title"}}{{.Faction.Name}}{{end}}
+
+{{define "nav-extra"}}
+<a href="/campaigns/{{.Faction.CampaignID}}">← Campaign</a>
+{{end}}
+
+{{define "content"}}
+<hgroup>
+  <h1>{{.Faction.Name}}</h1>
+  <p>{{if .Faction.Alignment}}<span class="tag">{{.Faction.Alignment}}</span>{{end}}</p>
+</hgroup>
+
+{{if .Faction.Description}}<p>{{.Faction.Description}}</p>{{end}}
+{{if .Faction.Notes}}<blockquote>{{.Faction.Notes}}</blockquote>{{end}}
+
+{{/* Members */}}
+<h2 class="section-header">Members</h2>
+{{if .NPCs}}
+<ul>
+  {{range .NPCs}}
+  <li>
+    <a href="/campaigns/{{$.Faction.CampaignID}}/npcs/{{.NPCID}}">{{.Name}}</a>
+    {{if .Role}}<span class="muted">— {{.Role}}</span>{{end}}
+  </li>
+  {{end}}
+</ul>
+{{else}}<p class="muted">No members linked.</p>{{end}}
+
+{{/* Locations */}}
+<h2 class="section-header">Locations</h2>
+{{if .Locations}}
+<ul>
+  {{range .Locations}}
+  <li>
+    <a href="/campaigns/{{$.Faction.CampaignID}}/locations/{{.LocationID}}">{{.Name}}</a>
+    {{if .Relationship}}<span class="muted">— {{.Relationship}}</span>{{end}}
+  </li>
+  {{end}}
+</ul>
+{{else}}<p class="muted">No locations linked.</p>{{end}}
+{{end}}

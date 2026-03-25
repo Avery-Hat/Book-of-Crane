@@ -1,0 +1,22 @@
+{{define "title"}}Campaigns{{end}}
+
+{{define "content"}}
+<hgroup>
+  <h1>Campaigns</h1>
+  <p>Your tabletop adventures</p>
+</hgroup>
+
+{{if .}}
+<div class="grid-3">
+  {{range .}}
+  <article>
+    <h3><a href="/campaigns/{{.ID}}">{{.Name}}</a></h3>
+    {{if .Description}}<p class="muted">{{.Description}}</p>{{end}}
+    <footer class="muted">Updated {{.UpdatedAt.Format "Jan 2, 2006"}}</footer>
+  </article>
+  {{end}}
+</div>
+{{else}}
+<p>No campaigns yet. Create one via the API to get started.</p>
+{{end}}
+{{end}}

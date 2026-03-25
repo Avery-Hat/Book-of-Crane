@@ -1,0 +1,77 @@
+{{define "title"}}{{.Campaign.Name}}{{end}}
+
+{{define "nav-extra"}}
+<a href="/campaigns/{{.Campaign.ID}}/search">Search</a>
+{{end}}
+
+{{define "content"}}
+<hgroup>
+  <h1>{{.Campaign.Name}}</h1>
+  {{if .Campaign.Description}}<p>{{.Campaign.Description}}</p>{{end}}
+</hgroup>
+
+{{/* NPCs */}}
+<h2 class="section-header">NPCs</h2>
+{{if .NPCs}}
+<div class="grid-3">
+  {{range .NPCs}}
+  <article>
+    <h4><a href="/campaigns/{{$.Campaign.ID}}/npcs/{{.ID}}">{{.Name}}</a></h4>
+    <div>
+      {{if .Race}}<span class="tag">{{.Race}}</span>{{end}}
+      {{if .Role}}<span class="tag">{{.Role}}</span>{{end}}
+      <span class="tag">{{.Status}}</span>
+    </div>
+    {{if .Description}}<p class="muted">{{.Description}}</p>{{end}}
+  </article>
+  {{end}}
+</div>
+{{else}}<p class="muted">No NPCs yet.</p>{{end}}
+
+{{/* Locations */}}
+<h2 class="section-header">Locations</h2>
+{{if .Locations}}
+<div class="grid-3">
+  {{range .Locations}}
+  <article>
+    <h4><a href="/campaigns/{{$.Campaign.ID}}/locations/{{.ID}}">{{.Name}}</a></h4>
+    {{if .Type}}<span class="tag">{{.Type}}</span>{{end}}
+    {{if .Description}}<p class="muted">{{.Description}}</p>{{end}}
+  </article>
+  {{end}}
+</div>
+{{else}}<p class="muted">No locations yet.</p>{{end}}
+
+{{/* Factions */}}
+<h2 class="section-header">Factions</h2>
+{{if .Factions}}
+<div class="grid-3">
+  {{range .Factions}}
+  <article>
+    <h4><a href="/campaigns/{{$.Campaign.ID}}/factions/{{.ID}}">{{.Name}}</a></h4>
+    {{if .Alignment}}<span class="tag">{{.Alignment}}</span>{{end}}
+    {{if .Description}}<p class="muted">{{.Description}}</p>{{end}}
+  </article>
+  {{end}}
+</div>
+{{else}}<p class="muted">No factions yet.</p>{{end}}
+
+{{/* Sessions */}}
+<h2 class="section-header">Sessions</h2>
+{{if .Sessions}}
+<table>
+  <thead>
+    <tr><th>#</th><th>Title</th><th>Played</th></tr>
+  </thead>
+  <tbody>
+  {{range .Sessions}}
+  <tr>
+    <td>{{.SessionNumber}}</td>
+    <td><a href="/campaigns/{{$.Campaign.ID}}/sessions/{{.ID}}">{{if .Title}}{{.Title}}{{else}}Session {{.SessionNumber}}{{end}}</a></td>
+    <td>{{if .PlayedOn}}{{.PlayedOn.Format "Jan 2, 2006"}}{{else}}<span class="muted">—</span>{{end}}</td>
+  </tr>
+  {{end}}
+  </tbody>
+</table>
+{{else}}<p class="muted">No sessions yet.</p>{{end}}
+{{end}}
