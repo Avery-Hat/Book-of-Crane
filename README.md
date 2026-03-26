@@ -153,7 +153,7 @@ curl -X POST http://localhost:8080/api/campaigns/1/items \
 
 ```bash
 curl http://localhost:8080/api/campaigns/1/sessions
-curl http://localhost:8080/api/campaigns/1/sessions/1/recap   # full session recap
+curl http://localhost:8080/api/campaigns/1/sessions/1/recap   # full session recap, CLI only
 
 curl -X POST http://localhost:8080/api/campaigns/1/sessions \
   -H "Content-Type: application/json" \
